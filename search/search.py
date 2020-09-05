@@ -152,7 +152,6 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
 
     #initialize queue for BFS operations
@@ -165,7 +164,6 @@ def uniformCostSearch(problem):
     start = problem.getStartState()
     #push the start node and the solution list onto the priorityqueue with the priority 0
     priorityqueue.push((start,solution),0)
-
 
     while not priorityqueue.isEmpty():
         node = priorityqueue.pop()
@@ -194,9 +192,37 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+#A* is UCS where the cost is g(n) + h(n)
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    #initialize queue for BFS operations
+    priorityqueue = util.PriorityQueue()
+    #create a list to hold the searched nodes
+    searchednodes = list() 
+    #create a list to hold the solution moves
+    solution = list()
+
+    start = problem.getStartState()
+    #push the start node and the solution list onto the priorityqueue with the priority 0 + nullHeuristic which is 0
+    priorityqueue.push((start,solution),0 + nullHeuristic(start,problem))
+
+    while not priorityqueue.isEmpty():
+        node = priorityqueue.pop()
+        coordinate = node[0]
+        solution = node[1]
+        #if the given coordinate is the solution then return the list of directions
+        if problem.isGoalState(coordinate):
+            return solution
+        if coordinate not in searchednodes:
+            searchednodes.append(coordinate)
+            #iterates through the successors
+            for i in problem.getSuccessors(coordinate):
+                if i[0] not in searchednodes:
+                    #find new cost if visit that node where the cost is the cost of actions + the heuristic of the coordinate of that node
+                    cost = problem.getCostOfActions(solution + [i[1]]) + heuristic(i[0],problem)
+                    #push onto priority queue with new cost as priority
+                    priorityqueue.push((i[0],solution+[i[1]]),cost)
+
     util.raiseNotDefined()
 
 
