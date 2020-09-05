@@ -86,12 +86,68 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
+
+    #initialize stack for DFS operations
+    stack = util.Stack()
+    #create a list to hold the searched nodes
+    searchednodes = list() 
+    #create a list to hold the solution moves
+    solution = list()
+
+    start = problem.getStartState()
+    #push the start node and the solution list onto the stack
+    stack.push((start,solution))
+
+    while not stack.isEmpty():
+        node = stack.pop()
+        coordinate = node[0]
+        solution = node[1]
+        #print solution
+        #if the given coordinate is the solution then return the list of directions
+        if problem.isGoalState(coordinate):
+            return solution
+        #if the current coordinate is not in the list of searched nodes push neighbors onto the stack and then push current node in seached list
+        if coordinate not in searchednodes:
+            for i in problem.getSuccessors(coordinate):
+                #check if coordinate was already searched and push onto stack if not searched with direction to get to that node
+                if i[0] not in searchednodes:
+                    stack.push((i[0], solution + [i[1]]))
+            #add current node to the searched nodess
+            searchednodes.append(coordinate)
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+
+    #initialize queue for BFS operations
+    queue = util.Queue()
+    #create a list to hold the searched nodes
+    searchednodes = list() 
+    #create a list to hold the solution moves
+    solution = list()
+
+    start = problem.getStartState()
+    #push the start node and the solution list onto the queue
+    queue.push((start,solution))
+
+    while not queue.isEmpty():
+        node = queue.pop()
+        coordinate = node[0]
+        solution = node[1]
+        #print solution
+        #if the given coordinate is the solution then return the list of directions
+        if problem.isGoalState(coordinate):
+            return solution
+        #if the current coordinate is not in the list of searched nodes push neighbors onto the queue and then push current node in seached list
+        if coordinate not in searchednodes:
+            for i in problem.getSuccessors(coordinate):
+                #check if coordinate was already searched and push onto queue if not searched with direction to get to that node
+                if i[0] not in searchednodes:
+                    queue.push((i[0], solution + [i[1]]))
+            #add current node to the searched nodess
+            searchednodes.append(coordinate)
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
