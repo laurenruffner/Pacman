@@ -297,7 +297,7 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         #return the starting position will give you a list in this format (x,y) and list of corners visited. At the start that list is empty
         return (self.startingPosition, [])
-        util.raiseNotDefined()
+
 
     def isGoalState(self, state):
         """
@@ -307,7 +307,6 @@ class CornersProblem(search.SearchProblem):
         corners = state[1]
         #if you have the same amount of corners visited as the amount of corners in self.corners then you have traversed them all
         return len(corners)==len(self.corners)
-        util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -379,7 +378,77 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    #ATTEMPT #2 Runs with 976 Expanded Nodes
+    #Greedy Approach
+    #heuristic: go to the minimum distant corner first and then from that corner find the next minimum corner distance. [minimum takes into account lower bound]
+    #all of those distances added is the heuristic?
+
+    current_coordinates = state[0]
+    visited_corners = state[1]
+
+    #create a list of nonvisted corners
+    nonvisited_corners = []
+    for i in corners:
+        if i not in visited_corners:
+            nonvisited_corners.append(i)
+
+    total_distance = 0
+    #until we visit all corners find the minimum distance from the current unvisited corners
+    while len(nonvisited_corners) != 0 :
+        min_distance = 999999
+        min_corner = []
+        for j in nonvisited_corners:
+            distance = util.manhattanDistance(current_coordinates,j)
+            if distance < min_distance:
+                min_distance = distance
+                min_corner = j
+        #after finding the minimum distance and the corner: 
+        #set position to that minimum distance corner, remove corner from unvisited and add to total distance
+        current_coordinates = min_corner
+        nonvisited_corners.remove(j)
+        total_distance = total_distance + min_distance
+    #will default to 0 if at the goal aka no unvisited corners
+    print total_distance
+    return total_distance
+    
+    '''
+    THIS ATTEMPT #1 DID IT IN 1357 Expanded Nodes: Time to try a different heuristic
+    #heuristic: distance from the farthest unvisited node
+    #need all unvisited corners, find the distance to the farthest corner from the current state coordinates
+    current_coordinates = state[0]
+    visited_corners = state[1]
+    
+    #create a list of nonvisted corners
+    nonvisited_corners = []
+    for i in corners:
+        if i not in visited_corners:
+            nonvisited_corners.append(i)
+
+    print nonvisited_corners
+
+    #create a list of tuples that connect the distance between the current node and each corner
+    corner_and_distance = []
+    for j in nonvisited_corners:
+        distance = util.manhattanDistance(current_coordinates, j)
+        corner_and_distance.append((j,distance))
+
+    #iterate through corners and distances and find the max distance
+    maxdistance = -1
+    farthest_corner = []
+    for k in corner_and_distance:
+        if k[1] > maxdistance:
+            maxdistance = k[1]
+            farthest_corner = k[0]
+
+    #default if no corners
+    if len(farthest_corner) == 0:
+        print "Heuristic: 0"
+        return 0
+
+    #return the maximum corner distance from current node as the heuristic
+    print "Heuristic: " + str(maxdistance)
+    return maxdistance
+    '''
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
