@@ -295,6 +295,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        #return the starting position will give you a list in this format (x,y) and list of corners visited. At the start that list is empty
+        return (self.startingPosition, [])
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +304,9 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        corners = state[1]
+        #if you have the same amount of corners visited as the amount of corners in self.corners then you have traversed them all
+        return len(corners)==len(self.corners)
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -314,7 +319,9 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        #has to set up state and location before actions
+        x,y = state[0]
+        corners = state[1]
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -324,7 +331,19 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty  = int(x+dx), int(y+dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                #had to make a new list so it would actually visit the corners, if you used the corners table you wouldnt visit the first 3 corners but it would count as visited
+                newcornerlist = list(corners)
+                #if the next node is a corner but not in the corners visited state function add the corner for the next nodes state
+                if ((nextx,nexty) in self.corners) and ((nextx,nexty) not in newcornerlist):
+                    newcornerlist.append((nextx,nexty))
+                    #print(newcornerlist)
+                #creates successor with the state of new x,y and corner list
+                successor = (((nextx,nexty),newcornerlist),action,1)
+                successors.append(successor)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
