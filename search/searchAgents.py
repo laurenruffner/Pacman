@@ -408,7 +408,7 @@ def cornersHeuristic(state, problem):
         nonvisited_corners.remove(j)
         total_distance = total_distance + min_distance
     #will default to 0 if at the goal aka no unvisited corners
-    print total_distance
+    #print total_distance
     return total_distance
     
     '''
@@ -541,8 +541,28 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    gamestate = problem.startingGameState
     "*** YOUR CODE HERE ***"
-    return 0
+
+    distances = []
+    print "-------------------------"
+    print foodGrid.asList()
+    for i in foodGrid.asList():
+        #distances.append((i, util.manhattanDistance(position, i)))
+        distances.append((i,mazeDistance(position,i,gamestate)))
+    max_distance = -1
+    max_food = []
+    for j in distances:
+        if j[1] > max_distance:
+            max_distance = j[1]
+            max_food = j[0]
+    #print max_distance
+    #print max_food
+    if len(max_food) == 0:
+        return 0
+    
+    return max_distance
+    
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
