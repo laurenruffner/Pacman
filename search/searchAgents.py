@@ -288,6 +288,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.startingGameState = startingGameState
 
     def getStartState(self):
         """
@@ -376,7 +377,7 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
+    '''
     "*** YOUR CODE HERE ***"
     #ATTEMPT #2 Runs with 976 Expanded Nodes
     #Greedy Approach
@@ -412,11 +413,12 @@ def cornersHeuristic(state, problem):
     return total_distance
     
     '''
-    THIS ATTEMPT #1 DID IT IN 1357 Expanded Nodes: Time to try a different heuristic
-    #heuristic: distance from the farthest unvisited node
+    #Time to try a different heuristic
+    #heuristic: distance from the farthest unvisited node using bfs
     #need all unvisited corners, find the distance to the farthest corner from the current state coordinates
     current_coordinates = state[0]
     visited_corners = state[1]
+    gamestate = problem.startingGameState
     
     #create a list of nonvisted corners
     nonvisited_corners = []
@@ -424,12 +426,12 @@ def cornersHeuristic(state, problem):
         if i not in visited_corners:
             nonvisited_corners.append(i)
 
-    print nonvisited_corners
+    #Sprint nonvisited_corners
 
     #create a list of tuples that connect the distance between the current node and each corner
     corner_and_distance = []
     for j in nonvisited_corners:
-        distance = util.manhattanDistance(current_coordinates, j)
+        distance = mazeDistance(current_coordinates, j,gamestate)
         corner_and_distance.append((j,distance))
 
     #iterate through corners and distances and find the max distance
@@ -442,13 +444,13 @@ def cornersHeuristic(state, problem):
 
     #default if no corners
     if len(farthest_corner) == 0:
-        print "Heuristic: 0"
+        #print "Heuristic: 0"
         return 0
 
     #return the maximum corner distance from current node as the heuristic
-    print "Heuristic: " + str(maxdistance)
+    #print "Heuristic: " + str(maxdistance)
     return maxdistance
-    '''
+    
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -543,10 +545,10 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     gamestate = problem.startingGameState
     "*** YOUR CODE HERE ***"
-
+    #heuristic is the distance to the farthest food from current position
     distances = []
-    print "-------------------------"
-    print foodGrid.asList()
+    #print "-------------------------"
+    #print foodGrid.asList()
     for i in foodGrid.asList():
         #distances.append((i, util.manhattanDistance(position, i)))
         distances.append((i,mazeDistance(position,i,gamestate)))
@@ -560,7 +562,6 @@ def foodHeuristic(state, problem):
     #print max_food
     if len(max_food) == 0:
         return 0
-    
     return max_distance
     
 
@@ -593,7 +594,26 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        '''
+        foodList = food.asList()
+        distances = []
+        min_distance = -1
+        min_food = []
+
+        #check if any food left overall
+        if len(foodList) == 0:
+            return []
+
+        #find closest food
+        for i in foodList:
+            distance = mazeDistance(startPosition,i,gameState)
+            distances.append(i,distance)
+            if distance < max_distance:
+                min_distance = distance
+                min_food = i
+        '''
+        #to find closest food run BFS since BFS starts with the closest nodes
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -629,7 +649,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #Goal state if at a food place aka the current coordinates == a coordinate in food.
+        return state in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
     """

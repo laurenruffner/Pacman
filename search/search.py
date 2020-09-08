@@ -152,7 +152,7 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
 
     #initialize queue for BFS operations
     priorityqueue = util.PriorityQueue()
